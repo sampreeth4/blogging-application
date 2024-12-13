@@ -5,17 +5,21 @@ const path = require("path");
 const PORT = 8000;
 const app = express();
 const userRoute = require("./routes/user");
+const { checkForAuthenticationCookie } = require("./middlewares/authentication");
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(checkForAuthenticationCookie("token"));
 
 mongoose.connect("mongodb://localhost:27017/blogify").then((e) => console.log("MongoDB connected"));
 
 app.get("/", (req,res) => {
-    res.render("home")
-})
+    res.render("home", {
+        user: req.user,
+    });
+});
 
 app.use("/user", userRoute);
 
