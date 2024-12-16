@@ -1,8 +1,9 @@
+require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 const app = express();
 const userRoute = require("./routes/user");
 const blogRouter = require("./routes/blog");
@@ -16,7 +17,9 @@ app.use(cookieParser());
 app.use(checkForAuthenticationCookie("token"));
 app.use(express.static(path.resolve("./public")));
 
-mongoose.connect("mongodb://localhost:27017/blogify").then((e) => console.log("MongoDB connected"));
+mongoose
+  .connect(process.env.MONGO_URL)
+  .then((e) => console.log("MongoDB Connected"));
 
 app.get("/", async (req,res) => {
     const allBlogs = await Blog.find({});
